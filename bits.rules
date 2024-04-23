@@ -1,0 +1,3 @@
+case Entry $ $ -> Inc  
+case Inc   0 1 -> Inc 
+case Inc   1 1 <> Halt
