@@ -132,12 +132,13 @@ func ParseProgram(program Program) ([]*Rule, error) {
 
 func main() {
 	argv := os.Args[1:]
-	if len(argv) != 1 {
-		fmt.Fprintf(os.Stderr, "ERROR: expected 1 arguments but got %d\n", len(argv))
+	if len(argv) != 2 {
+		fmt.Fprintf(os.Stderr, "ERROR: expected 2 arguments but got %d\n", len(argv))
 		os.Exit(1)
 	}
 
 	rule_file_name := argv[0]
+	tape_file_name := argv[1]
 
 	tokens, err := ReadFile(rule_file_name)
 	program := Program{tokens}
@@ -152,14 +153,18 @@ func main() {
 		os.Exit(1)
 	}
 
+	tape_seq, err := ReadFile(tape_file_name)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "ERROR: could not read file: %s\n", err)
+		os.Exit(1)
+	}
+
 	machine := Machine{
 		rules:   rules,
 		current: "Entry",
-		tape: Tape{
-			seq: []string{"$", "0", "0", "0", "0", "1"},
-		},
-		head: 0,
-		halt: false,
+		tape:    Tape{seq: tape_seq},
+		head:    0,
+		halt:    false,
 	}
 
 	for !machine.halt {
